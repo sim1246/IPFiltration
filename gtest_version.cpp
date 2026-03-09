@@ -6,5 +6,5 @@
 
 TEST(gtest_version, BasicAssertions) {
  
-    EXPECT_TRUE(2 > 0);
+    EXPECT_TRUE(3 > 0);
 }
