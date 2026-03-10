@@ -137,12 +137,6 @@ int main()
             pool.insert(split(v.at(0), '.'));
         }
 
-        auto fn = [](const IpAddress& ip) -> bool {
-            if (ip.o1 == 1)
-                return true;
-            return false;
-            };
-
         // TODO reverse lexicographically sort
         PrintIpPool(pool, true);
         // TODO filter by first byte and output
