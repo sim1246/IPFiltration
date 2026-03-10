@@ -36,7 +36,7 @@ if(WITH_GTEST)
     
     add_executable(gtest_version gtest_version.cpp)
     
-    target_link_libraries(gtest_version gtest_main helloworld)
+    target_link_libraries(gtest_version gtest_main)
     
     include(GoogleTest)
     gtest_discover_tests(gtest_version)
