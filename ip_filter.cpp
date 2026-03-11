@@ -88,16 +88,14 @@ bool operator<(const IpAddress& ip1, const IpAddress& ip2)
         }
     }
     return false;
-
 }
-
 std::ostream& operator<<(std::ostream& os, const  IpAddress& ip) {
-
-    os << ip.o1 << "." << ip.o2 << "." << ip.o3 << ip.o4;
+    os << ip.o1 << "." << ip.o2 << "." << ip.o3 << "." << ip.o4;
     return os;
 }
-using IpPool = std::set<IpAddress>;
 
+using IpPool = std::set<IpAddress>;
+using FilterFunc = std::function<bool(const IpAddress&)>;
 
 void PrintIpPool(const IpPool& p, bool reverse)
 {
@@ -114,7 +112,7 @@ void PrintIpPool(const IpPool& p, bool reverse)
             std::cout << *bIt << std::endl;
     }    
 }
-using FilterFunc = std::function<bool(const IpAddress&)>;
+
 void PrintWithFilter(const IpPool& p, FilterFunc func)
 {
     auto it = p.rbegin();
@@ -124,6 +122,7 @@ void PrintWithFilter(const IpPool& p, FilterFunc func)
             std::cout << *it << std::endl;
     }
 }
+
 int main()
 {
     try
