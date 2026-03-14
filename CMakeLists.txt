@@ -11,7 +11,7 @@ option(WITH_GTEST "Whether to build Gtest" ON)
 
 #configure_file(version.h.in version.h)
 
-add_executable(ip_filter ip_filter.cpp)
+add_executable(ip_filter main.cpp)
 #add_library(helloworld lib.cpp)
 
 set_target_properties(ip_filter PROPERTIES

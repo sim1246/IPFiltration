@@ -1,14 +1,4 @@
-#include <cassert>
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <charconv>
-#include <set>
-#include <algorithm>
-#include <functional>
-#include <stdint.h>
-
+#pragma once
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -16,13 +6,13 @@
 // ("11.", '.') -> ["11", ""]
 // (".11", '.') -> ["", "11"]
 // ("11.22", '.') -> ["11", "22"]
-std::vector<std::string> split(const std::string &str, char d)
+std::vector<std::string> split(const std::string& str, char d)
 {
     std::vector<std::string> r;
 
     std::string::size_type start = 0;
     std::string::size_type stop = str.find_first_of(d);
-    while(stop != std::string::npos)
+    while (stop != std::string::npos)
     {
         r.push_back(str.substr(start, stop - start));
 
@@ -52,7 +42,7 @@ struct IpAddress {
         auto [ptr4, ec4] = std::from_chars(str_ip[3].data(), str_ip[3].data() + str_ip[3].size(), o4);
         if (ec4 != std::errc())
             return;
-        
+
     }
 
     IpAddress(uint8_t i1, uint8_t i2, uint8_t i3, uint8_t i4)
@@ -63,11 +53,11 @@ struct IpAddress {
     {}
 
     IpAddress() = delete;
-    
-    uint8_t o1 =255;
-    uint8_t o2 =255;
-    uint8_t o3 =255;
-    uint8_t o4 =255;
+
+    uint8_t o1 = 255;
+    uint8_t o2 = 255;
+    uint8_t o3 = 255;
+    uint8_t o4 = 255;
 };
 
 
@@ -78,7 +68,7 @@ bool operator<(const IpAddress& ip1, const IpAddress& ip2)
     if (ip1.o1 == ip2.o1) {
         if (ip1.o2 < ip2.o2)
             return true;
-        if (ip1.o2 == ip2.o2){
+        if (ip1.o2 == ip2.o2) {
             if (ip1.o3 < ip2.o3)
                 return true;
             if (ip1.o3 == ip2.o3) {
@@ -112,7 +102,7 @@ void PrintIpPool(const IpPool& p, bool reverse)
         auto eIt = p.end();
         for (; bIt != eIt; ++bIt)
             std::cout << *bIt << std::endl;
-    }    
+    }
 }
 using FilterFunc = std::function<bool(const IpAddress&)>;
 void PrintWithFilter(const IpPool& p, FilterFunc func)
@@ -123,54 +113,4 @@ void PrintWithFilter(const IpPool& p, FilterFunc func)
         if (func(*it))
             std::cout << *it << std::endl;
     }
-}
-int main()
-{
-    try
-    {
-        //std::vector<std::vector<std::string> > ip_pool;
-        IpPool pool;
-
-        for(std::string line; std::getline(std::cin, line);)
-        {
-            std::vector<std::string> v = split(line, '\t');
-            pool.insert(split(v.at(0), '.'));
-        }
-
-        // TODO reverse lexicographically sort
-        PrintIpPool(pool, true);
-        // TODO filter by first byte and output
-        // ip = filter(1)
-        auto filter1 = [](const IpAddress& ip) -> bool {
-            if (ip.o1 == 1)
-                return true;
-            return false;
-            };
-        PrintWithFilter(pool, filter1);
-
-        // TODO filter by first and second bytes and output
-        // ip = filter(46, 70)
-        auto filter2 = [](const IpAddress& ip) -> bool {
-            if (ip.o1 == 46 && ip.o2 == 70)
-                return true;
-            return false;
-            };
-        PrintWithFilter(pool, filter2);
-        
-        // TODO filter by any byte and output
-        // ip = filter_any(46)
-
-        auto filter3 = [](const IpAddress& ip) -> bool {
-            if (ip.o1 == 46 || ip.o2 == 46 || ip.o3 == 46 || ip.o4 == 46)
-                return true;
-            return false;
-            };
-        PrintWithFilter(pool, filter3);
-    }
-    catch(const std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-
-    return 0;
 }
