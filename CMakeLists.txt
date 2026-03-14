@@ -36,6 +36,12 @@ if(WITH_GTEST)
     
     add_executable(gtest_version gtest_version.cpp)
     
+    set_target_properties(gtest_version PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+    
     target_link_libraries(gtest_version gtest_main)
     
     include(GoogleTest)

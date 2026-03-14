@@ -1,5 +1,10 @@
 #pragma once
 
+#include <algorithm>
+#include <functional>
+#include <stdint.h>
+#include <charconv>
+
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
 // ("..", '.') -> ["", "", ""]
@@ -42,7 +47,6 @@ struct IpAddress {
         auto [ptr4, ec4] = std::from_chars(str_ip[3].data(), str_ip[3].data() + str_ip[3].size(), o4);
         if (ec4 != std::errc())
             return;
-
     }
 
     IpAddress(uint8_t i1, uint8_t i2, uint8_t i3, uint8_t i4)
@@ -54,10 +58,10 @@ struct IpAddress {
 
     IpAddress() = delete;
 
-    uint8_t o1 = 255;
-    uint8_t o2 = 255;
-    uint8_t o3 = 255;
-    uint8_t o4 = 255;
+    uint8_t o1 = 0;
+    uint8_t o2 = 0;
+    uint8_t o3 = 0;
+    uint8_t o4 = 0;
 };
 
 
@@ -112,3 +116,4 @@ void PrintWithFilter(const IpPool& p, FilterFunc func)
             std::cout << *it << std::endl;
     }
 }
+
