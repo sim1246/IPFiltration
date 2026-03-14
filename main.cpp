@@ -2,8 +2,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <set>
-
 
 #include "ip_filter.h"
 
@@ -17,7 +15,9 @@ int main()
         for(std::string line; std::getline(std::cin, line);)
         {
             std::vector<std::string> v = split(line, '\t');
-            pool.insert(split(v.at(0), '.'));
+            IpAddress ip = split(v.at(0), '.');
+            if (ip)
+                pool.insert(ip);
         }
 
         // TODO reverse lexicographically sort

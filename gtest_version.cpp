@@ -7,12 +7,12 @@
 
 TEST(gtest_version, AddressConstruct) {
     IpAddress a({ "1","1","2","4" });
-    EXPECT_TRUE(a.o1 ==1 && a.o2 == 1 && a.o3 == 2 && a.o4 == 4);
+    EXPECT_TRUE(a && a.o1 ==1 && a.o2 == 1 && a.o3 == 2 && a.o4 == 4);
 }
 
 TEST(gtest_version, AddressConstructWrong) {
     IpAddress a({ "1","1","2","500" });
-    EXPECT_FALSE(a.o1 == 1 && a.o2 == 1 && a.o3 == 2 && a.o4 == 500);
+    EXPECT_FALSE(a);
 }
 
 TEST(gtest_version, AddressComparing)

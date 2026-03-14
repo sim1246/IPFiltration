@@ -4,6 +4,7 @@
 #include <functional>
 #include <stdint.h>
 #include <charconv>
+#include <set>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -56,6 +57,7 @@ struct IpAddress {
         , o2(i2)
         , o3(i3)
         , o4(i4)
+        , valid(true)
     {}
 
     operator bool() const { return valid; }
