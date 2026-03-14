@@ -84,7 +84,7 @@ bool operator<(const IpAddress& ip1, const IpAddress& ip2)
     return false;
 }
 std::ostream& operator<<(std::ostream& os, const  IpAddress& ip) {
-    os << +ip.o1 << "." << +ip.o2 << "." << +ip.o3 << "." << +ip.o4;
+    os << static_cast<int>(ip.o1) << "." << static_cast<int>(ip.o2) << "." << static_cast<int>(ip.o3) << "." << static_cast<int>(ip.o4);
     return os;
 }
 
