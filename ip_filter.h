@@ -37,6 +37,7 @@ struct IpAddress {
             return;
         auto [ptr1, ec1] = std::from_chars(str_ip[0].data(), str_ip[0].data() + str_ip[0].size(), o1);
         if (ec1 != std::errc())
+            
             return;
         auto [ptr2, ec2] = std::from_chars(str_ip[1].data(), str_ip[1].data() + str_ip[1].size(), o2);
         if (ec2 != std::errc())
@@ -47,6 +48,7 @@ struct IpAddress {
         auto [ptr4, ec4] = std::from_chars(str_ip[3].data(), str_ip[3].data() + str_ip[3].size(), o4);
         if (ec4 != std::errc())
             return;
+        valid = true;
     }
 
     IpAddress(uint8_t i1, uint8_t i2, uint8_t i3, uint8_t i4)
@@ -56,12 +58,16 @@ struct IpAddress {
         , o4(i4)
     {}
 
+    operator bool() const { return valid; }
+
     IpAddress() = delete;
 
     uint8_t o1 = 0;
     uint8_t o2 = 0;
     uint8_t o3 = 0;
     uint8_t o4 = 0;
+private:
+    bool valid = false;
 };
 
 
@@ -84,11 +90,11 @@ bool operator<(const IpAddress& ip1, const IpAddress& ip2)
     return false;
 }
 std::ostream& operator<<(std::ostream& os, const  IpAddress& ip) {
-    os << static_cast<int>(ip.o1) << "." << static_cast<int>(ip.o2) << "." << static_cast<int>(ip.o3) << "." << static_cast<int>(ip.o4);
+    os << +ip.o1 << "." << +ip.o2 << "." << +ip.o3 << "." << +ip.o4;
     return os;
 }
 
-using IpPool = std::set<IpAddress>;
+using IpPool = std::multiset<IpAddress>;
 using FilterFunc = std::function<bool(const IpAddress&)>;
 
 void PrintIpPool(const IpPool& p, bool reverse)
