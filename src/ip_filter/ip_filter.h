@@ -5,6 +5,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <stdint.h>
 
 std::vector<std::string> split(const std::string& str, char d);
 
