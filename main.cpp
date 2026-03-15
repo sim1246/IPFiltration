@@ -24,31 +24,16 @@ int main()
         PrintIpPool(pool, true);
         // TODO filter by first byte and output
         // ip = filter(1)
-        auto filter1 = [](const IpAddress& ip) -> bool {
-            if (ip.o1 == 1)
-                return true;
-            return false;
-            };
-        PrintWithFilter(pool, filter1);
+        PrintWithFilter(pool, AndFunc, 1);
 
         // TODO filter by first and second bytes and output
         // ip = filter(46, 70)
-        auto filter2 = [](const IpAddress& ip) -> bool {
-            if (ip.o1 == 46 && ip.o2 == 70)
-                return true;
-            return false;
-            };
-        PrintWithFilter(pool, filter2);
+        PrintWithFilter(pool, AndFunc, 46, 70);
         
         // TODO filter by any byte and output
         // ip = filter_any(46)
 
-        auto filter3 = [](const IpAddress& ip) -> bool {
-            if (ip.o1 == 46 || ip.o2 == 46 || ip.o3 == 46 || ip.o4 == 46)
-                return true;
-            return false;
-            };
-        PrintWithFilter(pool, filter3);
+        PrintWithFilter(pool, OrFunc, 46, 46, 46, 46);
     }
     catch(const std::exception &e)
     {

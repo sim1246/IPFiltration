@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <charconv>
 #include <set>
+#include <vector>
+#include <utility>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -34,22 +36,14 @@ std::vector<std::string> split(const std::string& str, char d)
 struct IpAddress {
     IpAddress(const std::vector<std::string>& str_ip)
     {
-        if (str_ip.size() != 4)
+        if (str_ip.size() != 4) {
+            valid = false;
             return;
-        auto [ptr1, ec1] = std::from_chars(str_ip[0].data(), str_ip[0].data() + str_ip[0].size(), o1);
-        if (ec1 != std::errc())
-            
-            return;
-        auto [ptr2, ec2] = std::from_chars(str_ip[1].data(), str_ip[1].data() + str_ip[1].size(), o2);
-        if (ec2 != std::errc())
-            return;
-        auto [ptr3, ec3] = std::from_chars(str_ip[2].data(), str_ip[2].data() + str_ip[2].size(), o3);
-        if (ec3 != std::errc())
-            return;
-        auto [ptr4, ec4] = std::from_chars(str_ip[3].data(), str_ip[3].data() + str_ip[3].size(), o4);
-        if (ec4 != std::errc())
-            return;
-        valid = true;
+        }
+        ParseOctet(str_ip[0], o1);
+        ParseOctet(str_ip[1], o2);
+        ParseOctet(str_ip[2], o3);
+        ParseOctet(str_ip[3], o4);
     }
 
     IpAddress(uint8_t i1, uint8_t i2, uint8_t i3, uint8_t i4)
@@ -69,27 +63,28 @@ struct IpAddress {
     uint8_t o3 = 0;
     uint8_t o4 = 0;
 private:
-    bool valid = false;
+
+    void ParseOctet(const std::string& str, uint8_t& octet)
+    {
+        if (!valid)
+            return;
+        auto [ptr4, ec4] = std::from_chars(str.data(), str.data() + str.size(), octet);
+        if (ec4 != std::errc())
+        {
+            valid = false;
+            return;
+        }
+    }
+    bool valid = true;
 };
 
 
 bool operator<(const IpAddress& ip1, const IpAddress& ip2)
 {
-    if (ip1.o1 < ip2.o1)
-        return true;
-    if (ip1.o1 == ip2.o1) {
-        if (ip1.o2 < ip2.o2)
-            return true;
-        if (ip1.o2 == ip2.o2) {
-            if (ip1.o3 < ip2.o3)
-                return true;
-            if (ip1.o3 == ip2.o3) {
-                if (ip1.o4 < ip2.o4)
-                    return true;
-            }
-        }
-    }
-    return false;
+    uint32_t i1 = (static_cast<uint32_t>(ip1.o1) << 24) + (static_cast<uint32_t>(ip1.o2) << 16) + (static_cast<uint32_t>(ip1.o3) << 8) + static_cast<uint32_t>(ip1.o4);
+    uint32_t i2 = (static_cast<uint32_t>(ip2.o1) << 24) + (static_cast<uint32_t>(ip2.o2) << 16) + (static_cast<uint32_t>(ip2.o3) << 8) + static_cast<uint32_t>(ip2.o4);
+
+    return i1 < i2;
 }
 std::ostream& operator<<(std::ostream& os, const  IpAddress& ip) {
     os << +ip.o1 << "." << +ip.o2 << "." << +ip.o3 << "." << +ip.o4;
@@ -97,7 +92,28 @@ std::ostream& operator<<(std::ostream& os, const  IpAddress& ip) {
 }
 
 using IpPool = std::multiset<IpAddress>;
-using FilterFunc = std::function<bool(const IpAddress&)>;
+
+using BoolFunc = std::function<bool(bool, bool)>;
+
+BoolFunc AndFunc = [](bool b1, bool b2) { return b1 && b2; };
+BoolFunc OrFunc = [](bool b1, bool b2) { return b1 || b2; };
+
+template<typename... Args>
+bool FilterFunc(const IpAddress& ip, BoolFunc funcB, Args ... octets)
+{
+    static_assert(sizeof...(octets) <= 4);
+    std::vector<uint8_t> ipv = { ip.o1, ip.o2, ip.o3, ip.o4 };
+
+    size_t count = sizeof...(octets);
+
+    uint32_t octs[] = { static_cast<uint32_t>(octets)... };
+    bool res = (octs[0] > 255) ? true : (ipv[0] == static_cast<uint8_t>(octs[0]));
+    for (size_t idx = 1; idx < count; ++idx)
+    {
+        res = (octs[idx] > 255) ? res = funcB(res, true) : res = funcB(res, (ipv[idx] == static_cast<uint8_t>(octs[idx])));
+    }
+    return res;
+}
 
 void PrintIpPool(const IpPool& p, bool reverse)
 {
@@ -115,12 +131,13 @@ void PrintIpPool(const IpPool& p, bool reverse)
     }
 }
 
-void PrintWithFilter(const IpPool& p, FilterFunc func)
+template<typename... Args>
+void PrintWithFilter(const IpPool& p, BoolFunc boolF, Args ... octets)
 {
     auto it = p.rbegin();
     auto end = p.rend();
     for (; it != end; ++it) {
-        if (func(*it))
+        if (FilterFunc(*it, boolF, std::forward<Args>(octets)...))
             std::cout << *it << std::endl;
     }
 }
