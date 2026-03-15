@@ -110,7 +110,7 @@ bool FilterFunc(const IpAddress& ip, BoolFunc funcB, Args ... octets)
     bool res = (octs[0] > 255) ? true : (ipv[0] == static_cast<uint8_t>(octs[0]));
     for (size_t idx = 1; idx < count; ++idx)
     {
-        res = (octs[idx] > 255) ? res = funcB(res, true) : res = funcB(res, (ipv[idx] == static_cast<uint8_t>(octs[idx])));
+        res = (octs[idx] > 255) ? funcB(res, true) : funcB(res, (ipv[idx] == static_cast<uint8_t>(octs[idx])));
     }
     return res;
 }
