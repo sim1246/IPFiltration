@@ -1,9 +1,7 @@
-#pragma once
 #include <charconv>
 #include <algorithm>
 #include <functional>
 #include <iostream>
-
 
 #include "ip_filter.h"
 
